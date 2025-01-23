@@ -1,7 +1,8 @@
 ## AI 春联生成器
 
 > 🎯 本项目完全由字节跳动推出的全新 AI 编程工具：[Trae](https://www.trae.ai/) 完成开发。
-> 📝 如何从 0 到 1 开发这个项目的详细介绍 [点击这里](https://mp.weixin.qq.com/s/6_NFU1X3w1QpdJHsfr7m3A) 查看。
+>
+> 📝 关于如何从 0 到 1 开发这个项目的详细介绍 [点击这里](https://mp.weixin.qq.com/s/6_NFU1X3w1QpdJHsfr7m3A) 查看。
 
 利用 Claude API，实现只需输入关键词，即可快速生成上下联和横批，界面简洁且喜庆。
 
