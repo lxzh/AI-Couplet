@@ -3,6 +3,7 @@ import axios from 'axios'
 import './App.css'
 import Lantern from './components/Lantern'
 import FuCharacter from './components/FuCharacter'
+import OpenAI from 'openai'
 
 function App() {
   const [input, setInput] = useState('')
@@ -13,6 +14,14 @@ function App() {
     upper: '福气带喜满门开',
     lower: '春风送暖入家来'
   })
+  console.log(import.meta.env.VITE_OPENAI_API_URL)
+  console.log(import.meta.env.VITE_OPENAI_API_KEY)
+
+  const openai = new OpenAI({
+    baseURL: import.meta.env.VITE_OPENAI_API_URL,
+    apiKey: import.meta.env.VITE_OPENAI_API_KEY,
+    dangerouslyAllowBrowser: true
+  });
 
   const generateCouplet = async () => {
     if (!input.trim()) {
@@ -24,31 +33,51 @@ function App() {
     setError('')
 
     try {
-      const response = await axios.post('/api/v1/messages', {
-        model: 'claude-3-sonnet-20240229',
-        max_tokens: 1024,
-        messages: [{
-          role: 'user',
-          content: `按如下格式生成一副对联（只返回对联内容，不要其他任何解释）：
+//       const response = await axios.post('/api/v1/messages', {
+//         model: 'claude-3-sonnet-20240229',
+//         max_tokens: 1024,
+//         messages: [{
+//           role: 'user',
+//           content: `按如下格式生成一副对联（只返回对联内容，不要其他任何解释）：
 
-横批：鸿运昌隆
-上联：春风送暖入门来
-下联：福气带喜满庭香
+// 横批：鸿运昌隆
+// 上联：春风送暖入门来
+// 下联：福气带喜满庭香
 
-请用这个固定格式，生成一副与"${input}"相关的新春对联。注意：不要加句号或其他标点符号。`
-        }]
-      }, {
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': import.meta.env.VITE_CLAUDE_API_KEY,
-          'anthropic-version': '2023-06-01',
-          'anthropic-dangerous-direct-browser-access': 'true'
-        },
-        timeout: 15000 // 增加超时时间到15秒
-      })
+// 请用这个固定格式，生成一副与"${input}"相关的新春对联。注意：不要加句号或其他标点符号。`
+//         }]
+//       }, {
+//         headers: {
+//           'Content-Type': 'application/json',
+//           'x-api-key': import.meta.env.VITE_CLAUDE_API_KEY,
+//           'anthropic-version': '2023-06-01',
+//           'anthropic-dangerous-direct-browser-access': 'true'
+//         },
+//         timeout: 15000 // 增加超时时间到15秒
+//       })
 
-      const content = response.data.content[0].text
+      const completion = await openai.chat.completions.create({
+        messages: [{ role: "system", content: "你是一个中英文语言高手，擅长写各种对联" },
+          {
+            role: 'user',
+            content: `按如下格式生成一副对联（只返回对联内容，不要其他任何解释）：
+
+  横批：鸿运昌隆
+  上联：春风送暖入门来
+  下联：福气带喜满庭香
+
+  请用这个固定格式，生成一副与"${input}"相关的新春对联。注意：不要加句号或其他标点符号。`
+          }
+        ],
+        model: "deepseek-chat",
+      });
+
+
+      const content = completion.choices[0].message.content
       console.log('Claude返回内容:', content)
+      if (content === null) {
+        throw new Error('春联内容格式不正确')
+      }
       
       // 使用正则表达式提取春联内容
       const horizontalMatch = content.match(/横批：([^\n]+)/)
