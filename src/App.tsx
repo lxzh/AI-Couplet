@@ -14,8 +14,6 @@ function App() {
     upper: '福气带喜满门开',
     lower: '春风送暖入家来'
   })
-  console.log(import.meta.env.VITE_OPENAI_API_URL)
-  console.log(import.meta.env.VITE_OPENAI_API_KEY)
 
   const openai = new OpenAI({
     baseURL: import.meta.env.VITE_OPENAI_API_URL,
